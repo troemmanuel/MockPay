@@ -1,4 +1,4 @@
-# FastAPI Payment API
+# MockPay Payment API
 
 Une API REST simple en FastAPI pour simuler des paiements par carte bancaire ou mobile money, avec notification via webhook.
 
