@@ -1,16 +1,16 @@
-# MockPay Payment API
+# 💸 MockPay – API de Paiement avec Webhook
 
-Une API REST simple en FastAPI pour simuler des paiements par carte bancaire ou mobile money, avec notification via webhook.
+Une API REST construite avec **FastAPI** pour simuler des paiements par **carte bancaire** ou **mobile money**, avec envoi automatique de notifications via **webhook**.
 
 ---
 
 ## 🚀 Fonctionnalités
 
-- 💳 Paiement via carte bancaire ou mobile money
-- 🔄 Traitement asynchrone simulé avec `asyncio`
-- 📡 Envoi automatique de notifications webhook
-- 🧾 Persistance des transactions en fichier JSON
-- 🐳 Déploiement facile via Docker & GitHub Actions
+- 💳 Paiement par carte ou mobile money  
+- 🔁 Traitement asynchrone simulé avec `asyncio`  
+- 📡 Notification automatique via webhook  
+- 🧾 Sauvegarde des transactions dans un fichier JSON  
+- 🐳 Déploiement simple avec Docker & GitHub Actions  
 
 ---
 
@@ -19,52 +19,60 @@ Une API REST simple en FastAPI pour simuler des paiements par carte bancaire ou 
 ```
 .
 ├── app.py                # Code principal de l'API
-├── Dockerfile            # Pour construire l'image Docker
+├── Dockerfile            # Image Docker de l'app
 ├── requirements.txt      # Dépendances Python
-├── transactions.json     # Historique des transactions
+├── transactions.json     # Historique des paiements
 ├── webhook_errors.log    # Log des erreurs webhook
 └── .github/
     └── workflows/
-        └── deploy.yml    # Déploiement automatique via GitHub Actions
+        └── deploy.yml    # Déploiement GitHub Actions
 ```
 
 ---
 
 ## ⚙️ Installation locale
 
-### 1. Cloner le dépôt
+### 1. Forker le dépôt
+
+Commence par forker le projet depuis :
+
+👉 https://github.com/troemmanuel/MockPay
+
+### 2. Cloner ton fork
 
 ```bash
-git clone https://github.com/<ton-utilisateur>/payment-api.git
-cd payment-api
+git clone https://github.com/<ton-utilisateur>/MockPay.git
+cd MockPay
 ```
 
-### 2. Créer un environnement virtuel
+### 3. Créer un environnement virtuel
 
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 ```
 
-### 3. Installer les dépendances
+### 4. Installer les dépendances
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Lancer l'API
+### 5. Lancer l'API
 
 ```bash
 uvicorn app:app --reload
 ```
 
-L'API sera disponible sur : [http://127.0.0.1:8000](http://127.0.0.1:8000)
+🔗 Accès local : [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
 ---
 
-## 🧪 Exemple d'appel à l'API
+## 🧪 Exemple d’appel API
 
 ### Endpoint : `POST /pay`
+
+#### Paiement mobile money
 
 ```json
 {
@@ -80,6 +88,8 @@ L'API sera disponible sur : [http://127.0.0.1:8000](http://127.0.0.1:8000)
   }
 }
 ```
+
+#### Paiement carte bancaire
 
 ```json
 {
@@ -110,31 +120,32 @@ L'API sera disponible sur : [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
 ## 🐳 Déploiement avec Docker
 
-### Build et run local
+### Build et exécution locale
 
 ```bash
-docker build -t fastapi-app .
-docker run -d -p 8000:8000 fastapi-app
+docker build -t mockpay .
+docker run -d -p 8000:8000 mockpay
 ```
 
 ---
 
-## 🚀 Déploiement automatisé avec GitHub Actions + Docker Hub + DigitalOcean
+## 🚀 Déploiement automatisé (GitHub Actions + Docker Hub + DigitalOcean)
 
-### Secrets requis dans GitHub :
+### Secrets requis sur GitHub :
 
-- `DOCKER_USERNAME` → Ton identifiant Docker Hub
-- `DOCKER_PASSWORD` → Ton mot de passe Docker Hub (ou token)
-- `DOCKER_IMAGE_NAME` → Exemple : `tonpseudo/fastapi-app`
-- `DO_SSH_PRIVATE_KEY` → Clé SSH privée pour se connecter à ton serveur
-- `DO_HOST` → IP de ton serveur DigitalOcean
-- `DO_USER` → Utilisateur SSH (`root`, `ubuntu`, etc.)
+| Clé                  | Description                                      |
+|----------------------|--------------------------------------------------|
+| `DOCKER_USERNAME`     | Identifiant Docker Hub                          |
+| `DOCKER_PASSWORD`     | Mot de passe ou token Docker Hub                |
+| `DOCKER_IMAGE_NAME`   | Exemple : `tonpseudo/mockpay`                   |
+| `DO_SSH_PRIVATE_KEY`  | Clé SSH privée pour se connecter au serveur     |
+| `DO_HOST`             | IP publique du serveur DigitalOcean             |
+| `DO_USER`             | Utilisateur SSH (`root`, `ubuntu`, etc.)        |
 
-Chaque `git push` sur `main` :
-1. Build l’image Docker
-2. Push l’image sur Docker Hub
-3. Se connecte à ton serveur via SSH
-4. Pull l’image
-5. Redémarre le conteneur
+### Processus de déploiement (automatisé sur `main`) :
 
----
+1. Build de l’image Docker  
+2. Push vers Docker Hub  
+3. Connexion SSH au serveur  
+4. Pull de l’image  
+5. Redémarrage du conteneur
