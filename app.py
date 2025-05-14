@@ -9,6 +9,7 @@ import random
 import httpx
 import asyncio
 from typing import Dict
+from pydantic import model_validator
 import re
 
 app = FastAPI()
@@ -32,30 +33,31 @@ class PaymentMethod(str, Enum):
 
 
 # Spécifique à chaque méthode
+from pydantic import BaseModel, Field, field_validator
+import re
+
 class DebitCardData(BaseModel):
     card_number: str
     expiry_date: str
     cvv: str
 
-    @validator("card_number")
+    @field_validator("card_number")
+    @classmethod
     def validate_card_number(cls, v):
-        # Simple regex to check if the card number is valid (16 digits)
         if not re.match(r"^\d{16}$", v):
             raise ValueError("Card number must be a 16-digit number.")
-
-        # Additional Luhn algorithm validation could be added here if required
         return v
 
-    @validator("cvv")
+    @field_validator("cvv")
+    @classmethod
     def validate_cvv(cls, v):
-        # CVV must be exactly 3 digits
         if not re.match(r"^\d{3}$", v):
             raise ValueError("CVV must be a 3-digit number.")
         return v
 
-    @validator("expiry_date")
+    @field_validator("expiry_date")
+    @classmethod
     def validate_expiry_date(cls, v):
-        # Expiry date should follow the format MM/YY
         if not re.match(r"^(0[1-9]|1[0-2])\/\d{2}$", v):
             raise ValueError("Expiry date must be in the format MM/YY.")
         return v
@@ -76,14 +78,13 @@ class PaymentRequest(BaseModel):
     external_reference: str
     payment_data: Dict
 
-    @validator("payment_data")
-    def validate_payment_data(cls, v, values):
-        method = values.get("method")
-        if method == PaymentMethod.debit_card:
-            DebitCardData(**v)
-        elif method == PaymentMethod.mobile_money:
-            MobileMoneyData(**v)
-        return v
+    @model_validator(mode="after")
+    def validate_payment_data(self):
+        if self.method == PaymentMethod.debit_card:
+            DebitCardData(**self.payment_data)
+        elif self.method == PaymentMethod.mobile_money:
+            MobileMoneyData(**self.payment_data)
+        return self
 
 
 class PaymentResponse(BaseModel):
